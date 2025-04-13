@@ -1,4 +1,5 @@
 # Projectwork1
+### Структура проекта 
 - project/
 - │
 - ├── bot.py       ← Telegram-логика (кнопки, команды)
