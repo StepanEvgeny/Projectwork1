@@ -3,8 +3,8 @@ from telegram.ext import ApplicationBuilder, CommandHandler, CallbackQueryHandle
 from logic import get_schedule_for_day, get_week_schedule, add_lesson, delete_lesson_by_id
 
 # === НАСТРОЙКИ ===
-TOKEN = '8109824187:AAGrAjqoeFpkJyXSlva8u5-HVH0qZTmmtZk'
-ADMIN_ID = 7048073193  # замени на свой Telegram ID
+TOKEN = 'Your_Token'
+ADMIN_ID = 1234567  # замени на свой Telegram ID
 
 # === МНОГОЯЗЫЧНОСТЬ ===
 phrases = {
