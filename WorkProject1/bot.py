@@ -92,11 +92,40 @@ async def add_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
     try:
         day_input = context.args[0]
-        day = day_translations.get(day_input, day_input)
+
+        # Исправляем язык дня
+        if day_input in ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']:
+            day = day_translations[day_input]  # Перевод на русский
+        else:
+            day = day_input
+
         time, subject = context.args[1], " ".join(context.args[2:])
         msg = add_lesson(day, time, subject)
-        await update.message.reply_text(msg)
-    except:
+        
+        # Получаем расписания
+        schedule_day = get_schedule_for_day(day)
+        schedule_week = get_week_schedule()
+        
+        # Собираем текст сообщения
+        full_message = (
+            f"{msg}\n\n"
+            "➖➖➖➖➖\n\n"
+            f"{schedule_day}\n\n"
+            "➖➖➖➖➖\n\n"
+            f"{schedule_week}"
+        )
+        
+        # Создаём кнопки
+        keyboard = InlineKeyboardMarkup([
+            [InlineKeyboardButton("➕ Добавить ещё урок", callback_data='add_more')],
+            [InlineKeyboardButton("🏠 В главное меню", callback_data='main_menu')]
+        ])
+        
+        # Отправляем сообщение с кнопками
+        await update.message.reply_text(full_message, parse_mode='Markdown', reply_markup=keyboard)
+        
+    except Exception as e:
+        print(f"Ошибка в add_command: {e}")
         await update.message.reply_text(_(update.effective_user.id, 'add_format_error'))
 
 async def delete_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -137,6 +166,10 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     elif query.data == 'main_menu':
         keyboard = [[InlineKeyboardButton(_(user_id, 'view_schedule'), callback_data='choose_day')]]
         await query.edit_message_text(_(user_id, 'main_menu'), reply_markup=InlineKeyboardMarkup(keyboard))
+
+    elif query.data == 'add_more':
+        await query.answer()
+        await query.message.reply_text("✏️ Чтобы добавить урок, используй команду:\n\n`/add <день> <время> <предмет>`", parse_mode='Markdown')
 
 # === ЗАПУСК ===
 if __name__ == '__main__':
